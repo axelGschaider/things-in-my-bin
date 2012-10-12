@@ -1,1 +1,1 @@
-gksudo shutdown -h now
+gksudo "shutdown -h now"
