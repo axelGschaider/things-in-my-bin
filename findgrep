@@ -1,0 +1,107 @@
+#!/bin/bash
+# FINDGREP INFO ########################
+PROGRAMINFO="findgrep version 6.
+This Script simplifies the recursive search of any given string in a given directory.
+It combines find and grep. Results are logged for later viewing and analyzing.
+findgrep remembers directories and search strings for following searches."
+
+PROGRAMINFO2="To change the path for logging of queries, please edit \$SAVEFILE in this script. Searches are case insensitive by default. Written by LinuxNetzer. www.netz10.de. contact: linuxnetzer-*-aet-*-netz10.de. findgrep v6 is released under GPL v3."
+
+# CHANGELOG #############################
+# Script now remembers directories and search strings. 
+# Logfile now moved to /tmp. 
+# Changed to more userfriendly interface. 
+# Added many comments for better script reading.
+
+# DEBUG MODE ############################
+# set -x					# uncomment for debugging
+
+# DEFINING SESSION SETTINGS #############
+ROOTDIR="$HOME/.findgrep"		# place to store files
+SAVEDIR="/$ROOTDIR/remember.dir"	# last search directory
+SAVESTRING="/$ROOTDIR/remember.string"	# last search string
+#########################################
+if [ ! -f $ROOTDIR ]			# file storage directory exists?
+	then
+	mkdir $ROOTDIR			# if not: create directory
+fi
+#########################################
+if [ ! -f $SAVEDIR ]			# last search directory defined?
+	then
+	echo $HOME > $SAVEDIR		# if not, set to: home directory
+fi
+#########################################
+if [ ! -f $SAVESTRING ]			# last search string defined?
+	then
+	echo $USER > $SAVESTRING	# if not, set to: user name 
+fi
+
+# VARIABLES #############################
+PROGNAME="findgrep v6"			# name of program
+SAVEFILE="$ROOTDIR/.findgrep.log"	# log file location
+SEARCHDIR="`cat $SAVEDIR`"		# load search directory
+SEARCHSTRING="`cat $SAVESTRING`"	# load search string
+DIVIDER="--------------------------------------------------" # better viewing
+
+# FUNKTION HEADER #######################
+HEADER () {
+clear
+echo "  __ _           _                      
+ / _(_)_ __   __| | __ _ _ __ ___ _ __  
+| |_| | '_ \ / _. -- _. | '__/ _ \ '_ \ 
+|  _| | | | | (_| | (_| | | |  __/ |_) |
+|_| |_|_| |_|\__,_|\__, |_|  \___| .__/ 
+                   |___/         |_|    " | grep --color .
+
+echo "   Recursive Text String Search Tool"	| grep --color .
+echo
+}
+
+# CHOOSE DIRECTORY TO SEARCH ############
+HEADER
+echo "Search in Directory:	$SEARCHDIR ?" 	| grep --color ? 
+echo "If OK, press ENTER. To change please enter new path."
+
+read -e INPUT			
+	if [ "$INPUT" != "" ]	
+		then echo $INPUT > $SAVEDIR
+		SEARCHDIR="$INPUT"
+	fi
+HEADER
+echo "Searching in:		$SEARCHDIR "	| grep --color $SEARCHDIR
+
+# CHOOSE TEXTSTRING TO SEARCH ####################
+echo "Search for:		$SEARCHSTRING ?"	| grep --color ?
+echo "if OK, press ENTER. To change please enter new searchstring."
+read -e INPUT2
+	if [ "$INPUT2" != "" ]	
+		then echo $INPUT2 > $SAVESTRING
+		SEARCHSTRING="$INPUT2"
+	fi
+echo "$SEARCHSTRING"			| grep --color .
+
+# SUMMARY ########################################
+HEADER
+echo "SUMMARY:"
+echo "Searching in:	$SEARCHDIR"	| grep --color $SEARCHDIR 
+echo "Searching for: 	$SEARCHSTRING"	| grep --color $SEARCHSTRING
+echo "Logging to:	$SAVEFILE"	| grep --color $SAVEFILE
+echo $DIVIDER
+echo "Now starting recursive search for $SEARCHSTRING in $SEARCHDIR..."
+echo $DIVIDER
+echo "SEARCH RESULTS:" 			| grep --color "SEARCH RESULTS"
+export GREP_COLOR="31"
+
+# EXECUTE #########################################
+find $SEARCHDIR -type f -exec grep -i $SEARCHSTRING --exclude=$SAVEFILE /dev/null {} \; 2> /dev/null | tee $SAVEFILE | grep -i --color $SEARCHSTRING
+
+# DISPLAY RESULTS ################################
+echo $DIVIDER
+export GREP_COLOR="01;31"	# fett, rot
+echo "Search in $SEARCHDIR:		finished"	| grep --color .
+echo "Found \"$SEARCHSTRING\":			`cat $SAVEFILE | wc -l`"	| grep --color .
+echo "Results saved to: 		$SAVEFILE"	| grep --color .
+echo $DIVIDER
+echo $PROGRAMINFO2
+echo $DIVIDER
+exit

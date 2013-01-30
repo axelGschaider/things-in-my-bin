@@ -1,0 +1,3 @@
+find . -name \*.html -type f -exec pandoc -o {}.epub {} \;
+rm *.html
+rm -r *_files

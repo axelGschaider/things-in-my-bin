@@ -1,0 +1,12 @@
+notify-send -t 5000  GO!!!!
+sleep 10m;
+notify-send -t 2000 "noch 10 Minuten";
+sleep 5m;
+notify-send -t 2000 "noch 5 Minuten";
+sleep 3m;
+notify-send -t 2000 "noch 2 Minuten";
+sleep 2m;
+notify-send -t 0  "PAUSE PAUSE PAUSE"
+sleep 5m;
+notify-send -t 0 "START WORKING AGAIN"
+
